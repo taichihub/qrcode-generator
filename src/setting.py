@@ -2,7 +2,6 @@ import qrcode
 import os
 
 IMG_DIRECTORY = "img" # ロゴ画像が入っているフォルダ
-OUTPUT_DIRECTORY = "output" # QRコード画像の出力先フォルダ
 
 # QRコード生成のための設定定数
 
@@ -13,6 +12,6 @@ BOX_SIZE = 10 # ボックスサイズ
 BORDER_SIZE = 4 # 境界線のサイズ
 QR_COLOR = "#000000" # QRコードの色（デフォルトは黒色, 黒：#000000）
 QR_BACKGROUND_COLOR = "#FFFFFF" # QRコードの背景色（デフォルトは白色, 白：#FFFFFF）
-QR_BACKGROUND_TRANSPARENT = False  # True：背景透明化有効, False：背景透明化無効
+QR_BACKGROUND_TRANSPARENT = False # True：背景透明化有効, False：背景透明化無効
 logo_files = [f for f in os.listdir(IMG_DIRECTORY) if os.path.isfile(os.path.join(IMG_DIRECTORY, f))]
 LOGO_PATH = os.path.join(IMG_DIRECTORY, logo_files[0]) if logo_files else None # img フォルダ内の最初の画像ファイルを検出して設定
