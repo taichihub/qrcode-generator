@@ -8,6 +8,7 @@ pandas = "*"
 qrcode = "*"
 pillow = "*"
 pytest = "*"
+autopep8 = "*"
 
 [dev-packages]
 
