@@ -1,6 +1,6 @@
 import qrcode
 from PIL import Image
-from .setting import (
+from src.setting import (
     QR_VERSION,
     ERROR_CORRECTION_LEVEL,
     BOX_SIZE,
@@ -13,6 +13,8 @@ from .setting import (
 
 
 def has_alpha_channel(logo_path):
+  # 指定された画像がアルファチャンネル（透明度）を持っているかどうかを判断する。
+  # アルファチャンネルを持つ場合はTrueを、持っていない場合はFalseを返す。
   try:
     with Image.open(logo_path) as img:
       return img.mode in ("RGBA", "LA")
@@ -21,6 +23,8 @@ def has_alpha_channel(logo_path):
 
 
 def create_qr_code(url):
+  # 指定されたURLからQRコードを生成する。
+  # QRコードの設定値（バージョン、エラー訂正レベル、ボックスサイズ、境界線サイズ）はsrc.settingモジュールから取得される。
   qr = qrcode.QRCode(
       version=QR_VERSION,
       error_correction=ERROR_CORRECTION_LEVEL,
@@ -33,6 +37,8 @@ def create_qr_code(url):
 
 
 def apply_transparency(img, logo_path):
+  # QRコード画像に透明化処理を適用する。
+  # QR_BACKGROUND_TRANSPARENTがTrueの場合のみ実行される。
   if QR_BACKGROUND_TRANSPARENT and has_alpha_channel(logo_path):
     img = img.convert("RGBA")
     new_pixels = [
@@ -44,6 +50,8 @@ def apply_transparency(img, logo_path):
 
 
 def add_logo_to_qr_code(img, logo_path):
+  # QRコード画像にロゴを追加する。
+  # ロゴのサイズと配置位置は画像サイズに基づいて計算される。
   if logo_path:
     logo = Image.open(logo_path).convert("RGBA")
     logo_size = int(min(img.size) * 0.25)
@@ -58,6 +66,8 @@ def add_logo_to_qr_code(img, logo_path):
 
 
 def generate_qr_code(url, filename, logo_path):
+  # URLからQRコードを生成し、ファイルに保存する。
+  # 透明化処理とロゴの追加も行われる。
   img = create_qr_code(url)
   img = apply_transparency(img, logo_path)
   img = add_logo_to_qr_code(img, logo_path)

@@ -11,13 +11,27 @@ LOGO_PATH = (
     os.path.join(IMG_DIRECTORY, logo_files[0]) if logo_files else None
 )  # img フォルダ内の最初の画像ファイルを検出して設定
 
-# QRコード生成のための設定定数
+# ーーーーーーーーーーQRコード生成のための設定定数ーーーーーーーーーー
 
-QR_VERSION = 1  # QRコードのバージョン
-ERROR_CORRECTION_LEVEL = qrcode.constants.ERROR_CORRECT_Q  # 25%のエラー訂正能力を持つレベル
-# エラー訂正レベルの記事はる
-BOX_SIZE = 10  # ボックスサイズ
-BORDER_SIZE = 4  # 境界線のサイズ
-QR_COLOR = "#000000"  # QRコードの色（デフォルトは黒色, 黒：#000000）
-QR_BACKGROUND_COLOR = "#FFFFFF"  # QRコードの背景色（デフォルトは白色, 白：#FFFFFF）
-QR_BACKGROUND_TRANSPARENT = False  # True：背景透明化有効, False：背景透明化無効
+# QRコードのバージョン
+# QRコードのバージョンについて：https://www.qrcode.com/about/version.html
+QR_VERSION = 1
+
+# 25%のエラー訂正能力を持つレベル(Qレベル)
+# エラー訂正レベルについて：https://www.mediaseek.co.jp/barcode/10908/#:~:text=QR%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AB%E3%81%AF%E8%AA%A4%E3%82%8A,L%E3%81%A8%E3%81%AA%E3%81%A3%E3%81%A6%E3%81%84%E3%81%BE%E3%81%99%E3%80%82
+ERROR_CORRECTION_LEVEL = qrcode.constants.ERROR_CORRECT_Q
+
+# ボックスサイズ(QRコードの大きさ)
+BOX_SIZE = 10
+
+# 境界線のサイズ(周りの白色)
+BORDER_SIZE = 4
+
+# QRコードの色（デフォルトは黒色, 黒：#000000）
+QR_COLOR = "#000000"
+
+# QRコードの背景色（デフォルトは白色, 白：#FFFFFF）
+QR_BACKGROUND_COLOR = "#FFFFFF"
+
+# True：背景透明化有効, False：背景透明化無効 (背景透過する場合はimgフォルダに透過済の画像を入れておく)
+QR_BACKGROUND_TRANSPARENT = False
