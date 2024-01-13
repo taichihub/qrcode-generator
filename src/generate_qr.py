@@ -55,7 +55,7 @@ def add_logo_to_qr_code(img, logo_path):
   if logo_path:
     logo = Image.open(logo_path).convert("RGBA")
     logo_size = int(min(img.size) * 0.25)
-    logo = logo.resize((logo_size, logo_size), Image.ANTIALIAS)
+    logo = logo.resize((logo_size, logo_size), Image.LANCZOS)
     pos = ((img.size[0] - logo_size) // 2, (img.size[1] - logo_size) // 2)
     box = (pos[0], pos[1], pos[0] + logo_size, pos[1] + logo_size)
     blank = Image.new("RGBA", (logo_size, logo_size), (255, 255, 255, 0))
