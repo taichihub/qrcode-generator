@@ -1,7 +1,10 @@
 import qrcode
 import os
 
-IMG_DIRECTORY = "img"  # ロゴ画像が入っているフォルダ
+DATA_DIRECTORY = "data"  # CSVファイルが格納されているディレクトリのパス
+QR_CODE_DIRECTORY = "qr_code"  # 生成したQRコードを格納するディレクトリのパス
+IMG_DIRECTORY = "img"  # ロゴ画像が格納されているディレクトリのパス
+
 logo_files = [
     f
     for f in os.listdir(IMG_DIRECTORY)

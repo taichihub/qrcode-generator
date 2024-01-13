@@ -3,17 +3,12 @@ import pandas as pd
 import logging
 from src.validate import validate_csv
 from src.generate_qr import generate_qr_code
+from src.setting import DATA_DIRECTORY, QR_CODE_DIRECTORY, IMG_DIRECTORY
 
 # Loggerの設定
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-# 定数の定義
-DATA_DIRECTORY = "data"  # CSVファイルが格納されているディレクトリのパス
-QR_CODE_DIRECTORY = "qr_code"  # 生成したQRコードを格納するディレクトリのパス
-IMG_DIRECTORY = "img"  # ロゴ画像が格納されているディレクトリのパス
-
 
 def get_logo_image_path(img_directory):
   # 指定されたディレクトリから最初に見つかったPNG画像のパスを返す。
