@@ -1,4 +1,5 @@
 import qrcode
+import os
 from PIL import Image
 from src.setting import (
     QR_VERSION,
@@ -15,6 +16,8 @@ from src.setting import (
 def has_alpha_channel(logo_path):
   # 指定された画像がアルファチャンネル（透明度）を持っているかどうかを判断する。
   # アルファチャンネルを持つ場合はTrueを、持っていない場合はFalseを返す。
+  if logo_path is None or not os.path.exists(logo_path):
+    return True  # 画像が存在しない場合はTrueを返す
   try:
     with Image.open(logo_path) as img:
       return img.mode in ("RGBA", "LA")
@@ -65,10 +68,18 @@ def add_logo_to_qr_code(img, logo_path):
   return img
 
 
+def is_img_folder_empty(img_directory):
+  return not any(
+      f.lower().endswith('.png') and os.path.isfile(os.path.join(img_directory, f))
+      for f in os.listdir(img_directory)
+  )
+
+
 def generate_qr_code(url, filename, logo_path):
   # URLからQRコードを生成し、ファイルに保存する。
   # 透明化処理とロゴの追加も行われる。
   img = create_qr_code(url)
   img = apply_transparency(img, logo_path)
-  img = add_logo_to_qr_code(img, logo_path)
+  if not is_img_folder_empty("img"):
+    img = add_logo_to_qr_code(img, logo_path)
   img.save(filename)

@@ -10,14 +10,13 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+
 def get_logo_image_path(img_directory):
   # 指定されたディレクトリから最初に見つかったPNG画像のパスを返す。
-  # PNG画像が存在しない場合は例外を発生させる。
   for file in os.listdir(img_directory):
     if file.lower().endswith(".png"):
       return os.path.join(img_directory, file)
-  logger.error("imgフォルダに画像ファイルが見つかりませんでした。")
-  raise Exception("imgフォルダに画像ファイルが見つかりませんでした。")
+  return None
 
 
 def create_subfolder(path):
@@ -46,14 +45,16 @@ def process_csv_file(file_path, qr_code_directory, logo_image_path):
     generate_qr_code(row["URL"], qr_code_filename, logo_image_path)
 
 
-if __name__ == "__main__":
-  #ここ関数化する
-  # ログ出す：かいし終了何のファイル読んだか生成したファイルの名前とか
+def process_all_csv_files(data_directory, qr_code_directory, img_directory):
   try:
-    logo_image_path = get_logo_image_path(IMG_DIRECTORY)
-    for filename in os.listdir(DATA_DIRECTORY):
+    logo_image_path = get_logo_image_path(img_directory)
+    for filename in os.listdir(data_directory):
       if filename.endswith(".csv"):
-        correct_file_path = os.path.join(DATA_DIRECTORY, filename)
-        process_csv_file(correct_file_path, QR_CODE_DIRECTORY, logo_image_path)
+        correct_file_path = os.path.join(data_directory, filename)
+        process_csv_file(correct_file_path, qr_code_directory, logo_image_path)
   except Exception as e:
     logger.error("CSVファイルの読み込み中にエラーが発生しました:", exc_info=True)
+
+
+if __name__ == "__main__":
+  process_all_csv_files(DATA_DIRECTORY, QR_CODE_DIRECTORY, IMG_DIRECTORY)
