@@ -27,7 +27,7 @@ def create_subfolder(path):
 
 
 def process_csv_file(file_path, qr_code_directory, logo_image_path):
-  # 指定されたCSVファイルを読み込み、QRコードの生成と保存を行う。
+  logger.info(f"右記のCSVファイルを元にQRコードの生成を開始します: {file_path}")
   validation_errors = validate_csv(file_path)
   if validation_errors:
     for error in validation_errors:
@@ -40,9 +40,11 @@ def process_csv_file(file_path, qr_code_directory, logo_image_path):
   )
   create_subfolder(subfolder_path)
 
-  for _, row in df.iterrows():
+  for index, row in df.iterrows():
     qr_code_filename = os.path.join(subfolder_path, row["ファイル名"])
+    logger.info(f"QRコード生成 :  {index + 1} / {len(df)}")
     generate_qr_code(row["URL"], qr_code_filename, logo_image_path)
+  logger.info(f"右記のCSVファイルを元にQRコードの生成が完了しました: {file_path}")
 
 
 def process_all_csv_files(data_directory, qr_code_directory, img_directory):
@@ -57,4 +59,6 @@ def process_all_csv_files(data_directory, qr_code_directory, img_directory):
 
 
 if __name__ == "__main__":
+  logger.info("実行開始")
   process_all_csv_files(DATA_DIRECTORY, QR_CODE_DIRECTORY, IMG_DIRECTORY)
+  logger.info("実行終了")
