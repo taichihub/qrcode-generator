@@ -63,7 +63,7 @@ E社.png,https://www.bandai.co.jp/
 
 実行コマンド
 ```
-python src/read_csv.py
+PYTHONPATH=. python src/read_csv.py
 ```
 
 実行後、qr_codeフォルダ内にCSVファイルごとにサブフォルダが生成され、その中にデータとsetting.pyで指定したQRコードの設定をもとに生成されたQRコードの画像ファイルが格納されます。
