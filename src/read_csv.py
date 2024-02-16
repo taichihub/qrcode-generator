@@ -13,9 +13,10 @@ logger = logging.getLogger(__name__)
 
 def get_logo_image_path(img_directory):
   # 指定されたディレクトリから最初に見つかったPNG画像のパスを返す。
-  for file in os.listdir(img_directory):
-    if file.lower().endswith(".png"):
-      return os.path.join(img_directory, file)
+  if os.path.exists(img_directory):
+    for file in os.listdir(img_directory):
+      if file.lower().endswith(".png"):
+        return os.path.join(img_directory, file)
   return None
 
 

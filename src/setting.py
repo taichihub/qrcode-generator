@@ -5,11 +5,14 @@ DATA_DIRECTORY = "data"  # CSVファイルが格納されているディレク�
 QR_CODE_DIRECTORY = "qr_code"  # 生成したQRコードを格納するディレクトリのパス
 IMG_DIRECTORY = "img"  # ロゴ画像が格納されているディレクトリのパス
 
-logo_files = [
-    f
-    for f in os.listdir(IMG_DIRECTORY)
-    if os.path.isfile(os.path.join(IMG_DIRECTORY, f))
-]
+if os.path.exists(IMG_DIRECTORY):
+    logo_files = [
+        f
+        for f in os.listdir(IMG_DIRECTORY)
+        if os.path.isfile(os.path.join(IMG_DIRECTORY, f))
+    ]
+else:
+    logo_files = []
 LOGO_PATH = (
     os.path.join(IMG_DIRECTORY, logo_files[0]) if logo_files else None
 )  # img フォルダ内の最初の画像ファイルを検出して設定
