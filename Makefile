@@ -1,4 +1,4 @@
-REGISTRY := registry.dev2.sasio.net
+REGISTRY := registry.sasio.net
 APP_NAME := qrcode-generator
 TAG := latest
 IMAGE_BASE=${REGISTRY}/${APP_NAME}
