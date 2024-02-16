@@ -69,10 +69,13 @@ def add_logo_to_qr_code(img, logo_path):
 
 
 def is_img_folder_empty(img_directory):
-  return not any(
+  if os.path.exists(img_directory):
+    return not any(
       f.lower().endswith('.png') and os.path.isfile(os.path.join(img_directory, f))
       for f in os.listdir(img_directory)
-  )
+    )
+  else:
+    return False
 
 
 def generate_qr_code(url, filename, logo_path):
