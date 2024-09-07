@@ -41,15 +41,22 @@ def test_process_csv_file():
   for csv_file in csv_files:
     test_csv_path = os.path.join(DATA_DIRECTORY, csv_file)
     run_process_csv_file(test_csv_path, QR_CODE_DIRECTORY, IMG_DIRECTORY)
-    # 生成されたQRコードファイルの存在を確認
     df = pd.read_csv(test_csv_path)
-    subfolder_name = os.path.splitext(os.path.basename(test_csv_path))[
-        0
-    ]  # CSVファイル名から拡張子を除いたもの
+    subfolder_name = os.path.splitext(os.path.basename(test_csv_path))[0]
+    use_numbering = False
+    row_counter = 0
+
     for index, row in df.iterrows():
-      qr_code_filename = os.path.join(
-          QR_CODE_DIRECTORY, subfolder_name, row["ファイル名"]
-      )
+      row_counter += 1
+      chunk_folder = ((row_counter // 1000) + 1) * 1000
+      if use_numbering:
+        qr_code_filename = os.path.join(
+            QR_CODE_DIRECTORY, subfolder_name, str(chunk_folder), f"{row_counter}.png"
+        )
+      else:
+        qr_code_filename = os.path.join(
+            QR_CODE_DIRECTORY, subfolder_name, str(chunk_folder), row["ファイル名"]
+        )
       assert os.path.exists(
           qr_code_filename
       ), f"QRコードファイル {qr_code_filename} が見つかりません"
