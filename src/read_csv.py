@@ -15,6 +15,7 @@ def parse_args():
   # コマンドライン引数をパースする
   parser = argparse.ArgumentParser(description='CSVファイルからQRコードを生成します。')
   parser.add_argument('-r', '--resume', type=int, default=1, help='この行番号から処理を再開します (1-indexed)')
+  parser.add_argument('-n', '--number', action='store_true', help='ファイル名を番号に変更します')
   return parser.parse_args()
 
 
@@ -41,7 +42,7 @@ def get_output_subfolder(base_folder, file_index):
   create_subfolder(subfolder)
   return subfolder
 
-def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1, chunk_size=1000):
+def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1, chunk_size=1000, use_numbering=False):
   logger.info(f"{file_path}を元にQRコードの生成を開始します。開始行: {start_row}, チャンクサイズ: {chunk_size}")
   validation_errors = validate_csv(file_path)
   if validation_errors:
@@ -53,7 +54,6 @@ def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1,
   base_subfolder = os.path.join(qr_code_directory, os.path.splitext(os.path.basename(file_path))[0])
   create_subfolder(base_subfolder)
 
-  # 1-indexedから0-indexedに変換
   chunk_start_index = (start_row - 1) // chunk_size  # 開始行がどのチャンクに含まれるか計算
   row_counter = (start_row - 1)  # 実際の行番号の追跡
 
@@ -73,21 +73,24 @@ def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1,
       # 指定件数ごとにディレクトリを分割してQRコードを保存する
       output_subfolder = get_output_subfolder(base_subfolder, row_counter)
 
-      # CSVファイルの「ファイル名」をそのまま使用
-      qr_code_filename = os.path.join(output_subfolder, row["ファイル名"])
+      # ファイル名を番号にするか、CSVのファイル名を使用するか選択
+      if use_numbering:
+        qr_code_filename = os.path.join(output_subfolder, f"{row_counter}.png")
+      else:
+        qr_code_filename = os.path.join(output_subfolder, row["ファイル名"])
       logger.info(f"QRコード生成中: 行番号 {row_counter}, ファイル名: {qr_code_filename}")
       generate_qr_code(row["URL"], qr_code_filename, logo_image_path)
 
   logger.info(f"{file_path}からQRコードの生成を完了しました。")
 
 
-def process_all_csv_files(data_directory, qr_code_directory, img_directory, start_row=1, chunk_size=1000):
+def process_all_csv_files(data_directory, qr_code_directory, img_directory, start_row=1, chunk_size=1000, use_numbering=False):
   try:
     logo_image_path = get_logo_image_path(img_directory)
     for filename in os.listdir(data_directory):
       if filename.endswith(".csv"):
         correct_file_path = os.path.join(data_directory, filename)
-        process_csv_file(correct_file_path, qr_code_directory, logo_image_path, start_row, chunk_size)
+        process_csv_file(correct_file_path, qr_code_directory, logo_image_path, start_row, chunk_size, use_numbering)
         start_row = 1  # 初回のファイル以後は1から開始する
   except Exception as e:
     logger.error("CSVファイルの読み込み中にエラーが発生しました:", exc_info=True)
@@ -96,5 +99,5 @@ def process_all_csv_files(data_directory, qr_code_directory, img_directory, star
 if __name__ == "__main__":
   args = parse_args()
   logger.info("処理を開始します")
-  process_all_csv_files(DATA_DIRECTORY, QR_CODE_DIRECTORY, IMG_DIRECTORY, args.resume)
+  process_all_csv_files(DATA_DIRECTORY, QR_CODE_DIRECTORY, IMG_DIRECTORY, start_row=args.resume, chunk_size=1000, use_numbering=args.number)
   logger.info("処理が完了しました")
