@@ -3,7 +3,7 @@ import pandas as pd
 import logging
 from src.validate import validate_csv
 from src.generate_qr import generate_qr_code
-from src.setting import DATA_DIRECTORY, QR_CODE_DIRECTORY, IMG_DIRECTORY
+from src.setting import DATA_DIRECTORY, QR_CODE_DIRECTORY, IMG_DIRECTORY, QR_CODE_FILES_PER_DIR
 import argparse
 
 # Loggerの設定
@@ -34,6 +34,12 @@ def create_subfolder(path):
     os.makedirs(path)
     logger.info(f"サブフォルダを作成しました: {path}")
 
+def get_output_subfolder(base_folder, file_index):
+  # 指定された件数ごとに出力フォルダを分割
+  folder_number = (file_index // QR_CODE_FILES_PER_DIR + 1) * QR_CODE_FILES_PER_DIR
+  subfolder = os.path.join(base_folder, str(folder_number))
+  create_subfolder(subfolder)
+  return subfolder
 
 def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1, chunk_size=1000):
   logger.info(f"{file_path}を元にQRコードの生成を開始します。開始行: {start_row}, チャンクサイズ: {chunk_size}")
@@ -43,10 +49,9 @@ def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1,
       logger.error(error)
     return
 
-  subfolder_path = os.path.join(
-    qr_code_directory, os.path.splitext(os.path.basename(file_path))[0]
-  )
-  create_subfolder(subfolder_path)
+  # ベースのフォルダを作成する（CSVファイル名ごとに分ける）
+  base_subfolder = os.path.join(qr_code_directory, os.path.splitext(os.path.basename(file_path))[0])
+  create_subfolder(base_subfolder)
 
   # 1-indexedから0-indexedに変換
   chunk_start_index = (start_row - 1) // chunk_size  # 開始行がどのチャンクに含まれるか計算
@@ -65,7 +70,11 @@ def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1,
       if row_counter < start_row:
         continue
 
-      qr_code_filename = os.path.join(subfolder_path, row["ファイル名"])
+      # 指定件数ごとにディレクトリを分割してQRコードを保存する
+      output_subfolder = get_output_subfolder(base_subfolder, row_counter)
+
+      # CSVファイルの「ファイル名」をそのまま使用
+      qr_code_filename = os.path.join(output_subfolder, row["ファイル名"])
       logger.info(f"QRコード生成中: 行番号 {row_counter}, ファイル名: {qr_code_filename}")
       generate_qr_code(row["URL"], qr_code_filename, logo_image_path)
 

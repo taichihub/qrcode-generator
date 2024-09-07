@@ -4,6 +4,7 @@ import os
 DATA_DIRECTORY = "data"  # CSVファイルが格納されているディレクトリのパス
 QR_CODE_DIRECTORY = "qr_code"  # 生成したQRコードを格納するディレクトリのパス
 IMG_DIRECTORY = "img"  # ロゴ画像が格納されているディレクトリのパス
+QR_CODE_FILES_PER_DIR = 1000  # デフォルトで1000件ごとにディレクトリを分割
 
 if os.path.exists(IMG_DIRECTORY):
     logo_files = [
