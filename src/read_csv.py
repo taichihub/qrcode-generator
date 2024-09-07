@@ -54,15 +54,17 @@ def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1,
   base_subfolder = os.path.join(qr_code_directory, os.path.splitext(os.path.basename(file_path))[0])
   create_subfolder(base_subfolder)
 
-  chunk_start_index = (start_row - 1) // chunk_size  # 開始行がどのチャンクに含まれるか計算
-  row_counter = (start_row - 1)  # 実際の行番号の追跡
+  row_counter = 0  # 実際の行番号の追跡
 
+  # CSVをチャンクごとに読み込む
   for chunk_index, chunk in enumerate(pd.read_csv(file_path, chunksize=chunk_size)):
-    if chunk_index < chunk_start_index:
-      continue  # 開始行のチャンクまでスキップ
+    chunk_start = row_counter + 1
+    chunk_end = row_counter + len(chunk)
+    
+    if chunk_end < start_row:
+      row_counter = chunk_end  # チャンク全体をスキップ
+      continue
 
-    chunk_start = chunk_index * chunk_size + 1
-    chunk_end = chunk_start + len(chunk) - 1
     logger.info(f"チャンク {chunk_index + 1} を処理中... 行: {chunk_start} 〜 {chunk_end}")
 
     for index, row in chunk.iterrows():
@@ -78,6 +80,7 @@ def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=1,
         qr_code_filename = os.path.join(output_subfolder, f"{row_counter}.png")
       else:
         qr_code_filename = os.path.join(output_subfolder, row["ファイル名"])
+      
       logger.info(f"QRコード生成中: 行番号 {row_counter}, ファイル名: {qr_code_filename}")
       generate_qr_code(row["URL"], qr_code_filename, logo_image_path)
 
