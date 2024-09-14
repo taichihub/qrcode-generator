@@ -1,18 +1,21 @@
 import os
 import pytest
-from src.setting import IMG_DIRECTORY
+from config.setting import PROGRAM_SETTINGS
+from config.logging import LOG_MESSAGES, logger
+
 
 # img フォルダ内の画像ファイルの一覧を取得
 logo_files = [
     f
-    for f in os.listdir(IMG_DIRECTORY)
-    if os.path.isfile(os.path.join(IMG_DIRECTORY, f))
+    for f in os.listdir(PROGRAM_SETTINGS["DIRECTORY"]["IMG"])
+    if os.path.isfile(os.path.join(PROGRAM_SETTINGS["DIRECTORY"]["IMG"], f))
 ]
 
-# 最初の画像ファイルをテスト用ロゴとして選択
-TEST_LOGO_PATH = os.path.join(
-    IMG_DIRECTORY, logo_files[0]) if logo_files else None
 
-# TEST_LOGO_PATH が存在しない場合、関連するテストをスキップ
+# 最初の画像ファイルをテスト用ロゴとして選択
+test_logo_path = os.path.join(PROGRAM_SETTINGS["DIRECTORY"]["IMG"], logo_files[0]) if logo_files else None
+
+
+# test_logo_path が存在しない場合、関連するテストをスキップ
 skip_if_no_logo = pytest.mark.skipif(
-    not TEST_LOGO_PATH, reason="imgフォルダに画像ファイルが存在しません")
+    not test_logo_path, reason=LOG_MESSAGES["TEST_COMMON"]["SKIP_REASON"])

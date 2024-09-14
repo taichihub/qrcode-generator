@@ -1,16 +1,7 @@
 import qrcode
 import os
 from PIL import Image
-from src.setting import (
-    QR_VERSION,
-    ERROR_CORRECTION_LEVEL,
-    BOX_SIZE,
-    BORDER_SIZE,
-    QR_COLOR,
-    QR_BACKGROUND_COLOR,
-    QR_BACKGROUND_TRANSPARENT,
-    LOGO_PATH,
-)
+from config.setting import PROGRAM_SETTINGS, QR_SETTINGS
 
 
 def has_alpha_channel(logo_path):
@@ -20,7 +11,7 @@ def has_alpha_channel(logo_path):
         return True  # 画像が存在しない場合はTrueを返す
     try:
         with Image.open(logo_path) as img:
-            return img.mode in ("RGBA", "LA")
+            return img.mode in PROGRAM_SETTINGS["COLORS"]["ALPHA_CHANNEL"]
     except IOError:
         return False
 
@@ -29,23 +20,23 @@ def create_qr_code(url):
     # 指定されたURLからQRコードを生成する。
     # QRコードの設定値（バージョン、エラー訂正レベル、ボックスサイズ、境界線サイズ）はsrc.settingモジュールから取得される。
     qr = qrcode.QRCode(
-        version=QR_VERSION,
-        error_correction=ERROR_CORRECTION_LEVEL,
-        box_size=BOX_SIZE,
-        border=BORDER_SIZE,
+        version=QR_SETTINGS["VERSION"],
+        error_correction=QR_SETTINGS["ERROR_CORRECTION_LEVEL"],
+        box_size=QR_SETTINGS["BOX_SIZE"],
+        border=QR_SETTINGS["BORDER_SIZE"],
     )
     qr.add_data(url)
     qr.make(fit=True)
-    return qr.make_image(fill_color=QR_COLOR, back_color=QR_BACKGROUND_COLOR)
+    return qr.make_image(fill_color=QR_SETTINGS["COLOR"], back_color=QR_SETTINGS["BACKGROUND_COLOR"])
 
 
 def apply_transparency(img, logo_path):
     # QRコード画像に透明化処理を適用する。
     # QR_BACKGROUND_TRANSPARENTがTrueの場合のみ実行される。
-    if QR_BACKGROUND_TRANSPARENT and has_alpha_channel(logo_path):
-        img = img.convert("RGBA")
+    if QR_SETTINGS["BACKGROUND_TRANSPARENT"] and has_alpha_channel(logo_path):
+        img = img.convert(PROGRAM_SETTINGS["MODES"]["RGBA"])
         new_pixels = [
-            (pixel if pixel[:3] != (255, 255, 255) else (255, 255, 255, 0))
+            (pixel if pixel[:3] != PROGRAM_SETTINGS["COLORS"]["WHITE_RGB"] else PROGRAM_SETTINGS["COLORS"]["WHITE_RGBA_TRANSPARENT"])
             for pixel in img.getdata()
         ]
         img.putdata(new_pixels)
@@ -56,12 +47,12 @@ def add_logo_to_qr_code(img, logo_path):
     # QRコード画像にロゴを追加する。
     # ロゴのサイズと配置位置は画像サイズに基づいて計算される。
     if logo_path:
-        logo = Image.open(logo_path).convert("RGBA")
+        logo = Image.open(logo_path).convert(PROGRAM_SETTINGS["MODES"]["RGBA"])
         logo_size = int(min(img.size) * 0.25)
         logo = logo.resize((logo_size, logo_size), Image.LANCZOS)
         pos = ((img.size[0] - logo_size) // 2, (img.size[1] - logo_size) // 2)
         box = (pos[0], pos[1], pos[0] + logo_size, pos[1] + logo_size)
-        blank = Image.new("RGBA", (logo_size, logo_size), (255, 255, 255, 0))
+        blank = Image.new(PROGRAM_SETTINGS["MODES"]["RGBA"], (logo_size, logo_size),PROGRAM_SETTINGS ["COLORS"]["WHITE_RGBA_TRANSPARENT"])
         img.paste(blank, box)
         mask = logo.split()[3]
         img.paste(logo, pos, mask=mask)
@@ -71,7 +62,7 @@ def add_logo_to_qr_code(img, logo_path):
 def is_img_folder_empty(img_directory):
     if os.path.exists(img_directory):
         return not any(
-            f.lower().endswith('.png') and os.path.isfile(os.path.join(img_directory, f))
+            f.lower().endswith(PROGRAM_SETTINGS["EXTENSION"]["IMG"]) and os.path.isfile(os.path.join(img_directory, f))
             for f in os.listdir(img_directory)
         )
     else:
@@ -83,6 +74,6 @@ def generate_qr_code(url, filename, logo_path):
     # 透明化処理とロゴの追加も行われる。
     img = create_qr_code(url)
     img = apply_transparency(img, logo_path)
-    if not is_img_folder_empty("img"):
+    if not is_img_folder_empty(PROGRAM_SETTINGS["DIRECTORY"]["IMG"]):
         img = add_logo_to_qr_code(img, logo_path)
     img.save(filename)
