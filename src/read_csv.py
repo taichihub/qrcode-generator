@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import argparse
+import sys
 from src.validate import validate_csv
 from src.generate_qr import generate_qr_code
 from config.setting import PROGRAM_SETTINGS
@@ -100,12 +101,22 @@ def process_all_csv_files(data_directory, qr_code_directory, img_directory, star
                 correct_file_path = os.path.join(data_directory, filename)
                 process_csv_file(correct_file_path, qr_code_directory, logo_image_path, start_row, chunk_size, use_numbering)
                 start_row = PROGRAM_SETTINGS["START_ROW"]
+        return True
     except Exception as e:
         logger.error(LOG_MESSAGES["READ_CSV"]["CSV_READ_ERROR"], exc_info=True)
+        return False
 
 
-if __name__ == "__main__":
+def main():
     args = parse_args()
     logger.info(LOG_MESSAGES["READ_CSV"]["START_PROCESS"])
-    process_all_csv_files(PROGRAM_SETTINGS["DIRECTORY"]["INPUT"], PROGRAM_SETTINGS["DIRECTORY"]["OUTPUT"], PROGRAM_SETTINGS["DIRECTORY"]["IMG"], start_row=args.resume, chunk_size=PROGRAM_SETTINGS["QR_CODE_FILES_PER_DIR"], use_numbering=args.number)
-    logger.info(LOG_MESSAGES["READ_CSV"]["END_PROCESS"])
+    success = process_all_csv_files(PROGRAM_SETTINGS["DIRECTORY"]["INPUT"], PROGRAM_SETTINGS["DIRECTORY"]["OUTPUT"], PROGRAM_SETTINGS["DIRECTORY"]["IMG"], start_row=args.resume, chunk_size=PROGRAM_SETTINGS["QR_CODE_FILES_PER_DIR"], use_numbering=args.number)
+    if success:
+        logger.info(LOG_MESSAGES["READ_CSV"]["END_PROCESS"])
+        return 0
+    else:
+        logger.error(LOG_MESSAGES["READ_CSV"]["ERROR_PROCESS"])
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main())
