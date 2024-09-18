@@ -11,7 +11,7 @@ def has_alpha_channel(logo_path):
         return True  # 画像が存在しない場合はTrueを返す
     try:
         with Image.open(logo_path) as img:
-            return img.mode in PROGRAM_SETTINGS["COLORS"]["ALPHA_CHANNEL"]
+            return img.mode in PROGRAM_SETTINGS["MODES"]["ALPHA_CHANNEL"]
     except IOError:
         return False
 

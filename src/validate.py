@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 from config.setting import PROGRAM_SETTINGS
-from config.logging import LOG_MESSAGES, logger
+from config.setup_log import LOG_MESSAGES, logger
 
 
 def is_valid_url(url):

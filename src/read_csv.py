@@ -4,7 +4,7 @@ import argparse
 from src.validate import validate_csv
 from src.generate_qr import generate_qr_code
 from config.setting import PROGRAM_SETTINGS
-from config.logging import LOG_MESSAGES, logger
+from config.setup_log import LOG_MESSAGES, logger
 
 
 def parse_args():

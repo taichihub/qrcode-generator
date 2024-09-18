@@ -1,7 +1,7 @@
 import os
 import pytest
 from config.setting import PROGRAM_SETTINGS
-from config.logging import LOG_MESSAGES, logger
+from config.setup_log import LOG_MESSAGES
 
 
 # img フォルダ内の画像ファイルの一覧を取得
