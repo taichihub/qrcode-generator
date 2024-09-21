@@ -16,6 +16,14 @@ CSVファイルのデータと任意の設定をもとにQRコードを一括で
 ・[pipenv(github)](https://github.com/pypa/pipenv)<br>
 ・[pipenv(qiita)](https://qiita.com/y-tsutsu/items/54c10e0b2c6b565c887a)
 
+## 使用方法
+- 環境構築を行う
+- `config/setting.py`でQRコード生成時の設定を行う
+- (QRコード中央に画像を挿入したい場合は`img/`配下に画像を配置する)
+- CSVファイルを`data/`配下に配置する
+- 実行する
+- `qr_code/`配下にQRコードが生成される
+
 ## 環境構築
 - 自分のローカル環境にクローンする
 ```
