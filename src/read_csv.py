@@ -36,8 +36,8 @@ def get_output_subfolder(base_folder, file_index):
     return subfolder
 
 
-def validate_file(file_path):
-    validation_errors = validate_csv(file_path)
+def validate_file(file_path, use_numbering):
+    validation_errors = validate_csv(file_path, use_numbering)
     if validation_errors:
         for error in validation_errors:
             logger.error(error)
@@ -87,7 +87,8 @@ def process_chunks(file_path, base_subfolder, start_row, chunk_size, use_numberi
 
 def process_csv_file(file_path, qr_code_directory, logo_image_path, start_row=PROGRAM_SETTINGS["START_ROW"], chunk_size=PROGRAM_SETTINGS["QR_CODE_FILES_PER_DIR"], use_numbering=False):
     logger.info(LOG_MESSAGES["READ_CSV"]["CSV_PROCESS_START"].format(file_path, start_row, chunk_size))
-    if not validate_file(file_path): return
+    if not validate_file(file_path, use_numbering):  
+        return
     base_subfolder = prepare_subfolder(file_path)
     process_chunks(file_path, base_subfolder, start_row, chunk_size, use_numbering, logo_image_path)
     logger.info(LOG_MESSAGES["READ_CSV"]["CSV_PROCESS_COMPLETE"].format(file_path))

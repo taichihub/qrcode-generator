@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+import sys
 from config.setting import PROGRAM_SETTINGS
 from config.setup_log import LOG_MESSAGES, logger
 
@@ -15,8 +16,6 @@ def is_valid_url(url):
 def is_valid_filename(filename):
     # ファイル名が有効な形式（拡張子が'.png'であるか）を検証する。
     valid = str(filename).endswith(PROGRAM_SETTINGS["EXTENSION"]["IMG"])
-    if not valid:
-        logger.error(LOG_MESSAGES["VALIDATE"]["INVALID_EXTENSION"].format(filename))
     return valid
 
 
@@ -33,10 +32,11 @@ def validate_csv_structure(df):
 
 
 # 各行のデータを検証する
-def validate_csv_row(df):
+def validate_csv_row(df, use_numbering):
     for index, row in df.iterrows():
-        if not is_valid_filename(row[PROGRAM_SETTINGS["CSV_HEADER"]["FILE_NAME"]]):
+        if not use_numbering and not is_valid_filename(row[PROGRAM_SETTINGS["CSV_HEADER"]["FILE_NAME"]]):
             logger.error(LOG_MESSAGES["VALIDATE"]["INVALID_EXTENSION"].format(index + 1))
+            sys.exit(1)
         if not is_valid_url(row[PROGRAM_SETTINGS["CSV_HEADER"]["FILE_URL"]]):
             logger.error(LOG_MESSAGES["VALIDATE"]["INVALID_URL_FORMAT"].format(index + 1))
 
@@ -59,14 +59,14 @@ def has_consecutive_newlines(file_path):
 
 
 # CSVファイル全体を検証する
-def validate_csv(file_path):
+def validate_csv(file_path, use_numbering=False):
     if not has_consecutive_newlines(file_path):
         return
     try:
         df = pd.read_csv(file_path)
         if not validate_csv_structure(df):
             return
-        validate_csv_row(df)
+        validate_csv_row(df, use_numbering)
     except pd.errors.EmptyDataError:
         logger.error(LOG_MESSAGES["VALIDATE"]["EMPTY_DATA_ERROR"])
     except pd.errors.ParserError:

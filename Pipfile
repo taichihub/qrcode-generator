@@ -9,6 +9,7 @@ qrcode = "*"
 pillow = "*"
 pytest = "*"
 autopep8 = "*"
+pyyaml = "*"
 
 [dev-packages]
 
